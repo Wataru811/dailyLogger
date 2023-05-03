@@ -1,0 +1,52 @@
+{
+  "name": "daily-log",
+  "productName": "daily-log",
+  "version": "1.0.0",
+  "description": "Daily Report writer with md format",
+  "main": "./src/main.js",
+  "config": {
+    "forge": {
+      "packagerConfig": {
+        "icon": "./build/app"
+      },
+      "makers": [],
+      "publishers": []
+    }
+  },
+  "build": {
+    "productName": "daily-log",
+    "appId": "com.interio-inc.daily.log",
+    "mac": {
+      "target": "dmg",
+      "icon": "build/app.icns"
+    },
+    "directories": {
+      "output": "out"
+    }
+  },
+  "scripts": {
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make",
+    "publish": "electron-forge publish",
+    "lint": "echo \"No linting configured\""
+  },
+  "keywords": [],
+  "author": "Walter Ehrmantraut",
+  "license": "MIT",
+  "dependencies": {
+    "electron-squirrel-startup": "^1.0.0",
+    "electron-store": "^8.1.0"
+  },
+  "devDependencies": {
+    "@electron-forge/cli": "^6.1.1",
+    "@electron-forge/maker-deb": "^6.1.1",
+    "@electron-forge/maker-rpm": "^6.1.1",
+    "@electron-forge/maker-squirrel": "^6.1.1",
+    "@electron-forge/maker-zip": "^6.1.1",
+    "electron": "24.1.3",
+    "electron-installer-dmg": "^4.0.0",
+    "electron-packager": "^17.1.1",
+    "electron-store": "^8.1.0"
+  }
+}

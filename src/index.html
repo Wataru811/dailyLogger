@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="utf-8" />
+  <title>Daily Report Logger v1.0</title>
+
+  <!-- セキュリティーポリシーを指定。Aceライブラリがインラインスタイルを扱うため。 -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline';" />
+
+  <link href="tailwind.css" rel="stylesheet" />
+  <link href="main.css" rel="stylesheet" />
+  <script defer src="libs/ace/1.4.14/ace.js"></script>
+  <script defer src="libs/ace/1.4.14/theme-twilight.js"></script>
+  <script defer src="renderer.js"></script>
+  <script defer src="index.js"></script>
+
+  <style>
+    html {
+      color: #eee;
+    }
+
+    textarea {
+      vertical-align: text-top;
+      border: solid 1px #aaa;
+      border-radius: 4px;
+    }
+
+    input,
+    select,
+    button {
+      border-radius: 4px;
+      border: solid 1px #bbb;
+      padding: 3px;
+      margin: 2px;
+    }
+
+    button {
+      background-color: #d1d8d7;
+    }
+
+    #log-text {
+      min-width: 640px;
+      min-height: 70px;
+      margin-bottom: 10px;
+    }
+
+    .btn-proj {
+      border: solid 1px #ccc;
+      border-radius: 4px;
+      min-width: 19px;
+      line-height: 17px;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0, 0, 0, 0.4);
+    }
+
+    .modal table {
+      width: 78%;
+    }
+
+    .modal table input {
+      min-width: 400px;
+    }
+
+    .modal table td:nth-child(1) {
+      text-align: right;
+      font-size: 0.8em;
+    }
+
+
+
+    .modal-content {
+      background-color: #e2f3ff;
+      color: #000;
+      margin: 15% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%;
+    }
+
+    .close-btn {
+      color: #494949;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    .btn-system {
+      position: fixed;
+      right: 8px;
+      top: 8px;
+    }
+
+    .close-btn:hover,
+    .close-btn:focus {
+      color: #000;
+      text-decoration: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="window">
+    <!--
+
+    <div class="titlebar">
+      <div class="buttons">
+        <div class="close">
+          <a class="closebutton" href="#"><span><strong>x</strong></span></a>
+        </div>
+        <div class="minimize">
+          <a class="minimizebutton" href="#"><span><strong>&ndash;</strong></span></a>
+        </div>
+        <div class="zoom">
+          <a class="zoombutton" href="#"><span><strong>+</strong></span></a>
+        </div>
+      </div>
+      Daily Report logger v.1.0
+    </div>
+    -->
+    <div class="content">
+      <header class="header">
+        <button class="btn-system open-btnS" id="open-btnS">
+          <img src="./img/gear.svg" width="16" height="16">
+        </button>
+
+        <span class="mr-4">Project:　
+        </span><select id="sel-project">
+          <option value="ad-hoc" title="">ad-hoc</option>
+          <option value="meeting" title="">meeting</option>
+          <option value="office routine" title="">office routine</option>
+        </select>
+        <button class="btn-proj" id="ProjDelBtn">Ｘ</button>
+        <button class="btn-proj" id="openModalBtn">＋</button>
+        <select id="log-type">
+          <option value="Me" title="自己タスク">myself:</option>
+          <option value="From" title="オーダーを出した人">from:</option>
+          <option value="To" title="自分がオーダーした相手">to:</option>
+        </select> <input type="" id="log-target" />
+        <br>
+        <textarea id="log-text"></textarea>
+        <button class="btn-primary logbtn" id="btnPost">log登録</button>
+        <br>
+      </header>
+
+
+      <div id="inputArea"></div>
+      <div class="cmd-wrap">
+        <button style="display:none;" class="btn-primary ed-cmd" id="btnOpen">読み込む</button>
+        <button class="btn-primary ed-cmd" id="btnSave">保存する</button>
+      </div>
+
+      <footer class="footer"></footer>
+    </div>
+
+    <div id="myModal" class="modal">
+      <div class="modal-content">
+        <span class="close-btn">&times;</span>
+        <h2>プロジェクト登録
+          <span style="font-size:0.7em">(登録したpathに日報を保存します)</span>
+        </h2>
+        <table>
+          <tr>
+            <td>
+              <label for="inputProj">名前:</label>
+            </td>
+            <td>
+              <input type="text" id="inputProj" name="inputText"><br>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <label for="inputProj">Path:</label>
+            </td>
+            <td>
+              <input type="text" id="inputPath" name="inputPath">
+            </td>
+            <td>
+              <button id="getPath">[dir]</button>
+            </td>
+          </tr>
+        </table>
+        <button id="newProj">登録</button>
+      </div>
+    </div>
+
+
+    <div id="settingsModal" class="modal">
+      <div class="modal-content">
+        <span class="close-btnS">&times;</span>
+        <h2>設定
+        </h2>
+        <table>
+          <tr>
+            <td>
+              <label for="inputDefProj">出力path:</label>
+            </td>
+            <td>
+              <input type="text" id="inputDefPath" name="inputDefPath">
+            </td>
+            <td>
+              <button id="getDefPath">[dir]</button>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <label for="inputAuthor">Author</label>
+            </td>
+            <td>
+              <input type="text" id="inputAuthor" name="inputAuthor">
+            </td>
+            <td>
+            </td>
+          </tr>
+        </table>
+        <button id="saveDefPath">登録</button>
+      </div>
+    </div>
+
+
+  </div>
+
+  <style>
+    .logbtn {
+      position: relative;
+      right: -10px;
+      top: 25px;
+    }
+
+    footer {
+      width: 802px;
+      height: 20px;
+      color: #ccc;
+      font-size: .8em;
+      background-color: #4b4d62;
+      margin-top: -19px;
+      margin-left: -12px;
+      border-bottom-left-radius: 6px;
+      border-bottom-right-radius: 6px;
+    }
+
+    #inputArea {
+      padding: 0;
+      min-height: 480px;
+    }
+
+    .cmd-wrap {
+      position: relative;
+      width: 100%;
+      bottom: 40px;
+      right: 10px;
+      display: flex;
+      justify-content: flex-end;
+
+    }
+
+
+    .ed-cmd {
+      font-size: 0.9em;
+    }
+  </style>
+
+
+</body>
+
+
+</html>
