@@ -1,6 +1,6 @@
 # dailyLogger
 
-Daily Report writer by Electron framework.
+Daily Report logger by Electron framework.
 
 The app is intended for whom manage one or more projects to keep track of their work with clients and team members.
 
