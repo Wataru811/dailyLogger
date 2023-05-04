@@ -77,7 +77,14 @@ const createTrayIcon = () => {
       imgFilePath = __dirname + '/app.png';
     }
   }
+  const version = app.getVersion();
   const contextMenu = Menu.buildFromTemplate([
+    {
+      label: "Version " + version, type: 'normal', enable: false
+    },
+    {
+      label: "使い方", click: () => { shell.openExternal('https://github.com/Wataru811/dailyLogger/blob/main/README.md') }
+    },
     {
       label: '終了', click: function () {
         app.isQuiting = true;
@@ -197,13 +204,13 @@ async function newFile(fname) {
     return
   }
   let dt = formatDate(new Date());
-  let textData0 = `# Daily Report  ${dt} \n\n Written by ${global.author}\n\n---\n`
+  let textData0 = `# Daily Report  ${dt} \n\n Written by ${global.author}\n\n---\n<br>`
   await fs.writeFileSync(fname, textData0, "utf8");
 }
 
 function createArticle(data) {
   let tm = formatTime(new Date());
-  let textData1 = `\n## ${tm} ${data.project}\n`
+  let textData1 = `\n## [${tm}]   ${data.project}\n`
   if (data.person != "") {
     if (data.direction == "From") {
       textData1 = textData1 + `${data.person}さんより:\n`
