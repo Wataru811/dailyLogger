@@ -1,2 +1,62 @@
 # dailyLogger
-Daily Report writer by Electron framework
+
+Daily Report logger by Electron framework.
+
+The app is intended for whom manage one or more projects to keep track of their work with clients and team members.
+
+like...
+
+```
+# Daily Report  2023-04-01
+
+
+## 09:00 Project-ABC meeting
+
+brabrabra　。。。
+
+
+## 10:00 Project-XYZ  from Mr. Yamamoto
+He ordered upgrading some functions.
+
+details:
+
+- func1:  .....
+- func2:  ....
+
+```
+
+
+
+## Usage
+
+This app is writing 'daily report' as your working log.
+It d
+
+
+1. first time you run the app, please press "gear" icon in right top of teh scree and set data folder where your report will be saved.
+
+2. add project name for easy post of your log.
+
+3. 
+
+
+## install
+
+```
+yarn
+```
+
+## run
+
+```
+yarn start
+```
+
+## build
+
+'yarn make' does not work for darwin so please use following script.
+
+```
+./build.sh
+```
+
