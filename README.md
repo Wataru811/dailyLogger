@@ -7,6 +7,7 @@ The app is intended for whom manage one or more projects to keep track of their 
 like...
 
 ```
+
 # Daily Report  2023-04-01
 
 
@@ -25,6 +26,10 @@ details:
 
 ```
 
+## Version
+
+- 1.0.1 タスクバーに常駐
+- 1.0.2 人名を登録、選択可能に
 
 
 ## Usage
@@ -59,4 +64,7 @@ yarn start
 ```
 ./build.sh
 ```
+
+
+
 
