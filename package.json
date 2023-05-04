@@ -1,7 +1,7 @@
 {
   "name": "daily-log",
   "productName": "daily-log",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Daily Report writer with md format",
   "main": "./src/main.js",
   "config": {

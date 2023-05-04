@@ -3,7 +3,7 @@ const path = require("path");
 const fs = require("fs");
 const electron = require("electron");
 const app = electron.app;
-const { BrowserWindow, ipcMain, dialog } = electron;
+const { BrowserWindow, ipcMain, dialog, Tray, Menu, nativeImage, nativeTheme } = electron;
 const Global = require('./global.js');
 const DEBUG = true;
 //const electronLog = require('electron-log');
@@ -30,7 +30,47 @@ function saveSettings() {
 }
 
 
-// メインウィンドウ
+// ---------------- Tray ----------------------------
+let tray = null;
+const createTrayIcon = () => {
+  let imgFilePath;
+  console.log(process.platform);
+  if (process.platform === 'win32') { // Windows
+    imgFilePath = __dirname + '/app.ico';
+  }
+  else { // macOS or linux
+    imgFilePath = __dirname + '/app.png';
+    // 一応、macOS のダークモードに対応しておく
+    if (nativeTheme.shouldUseDarkColors === true) {
+      isDarkTheme = true;
+      imgFilePath = __dirname + '/app.png';
+    }
+  }
+  const contextMenu = Menu.buildFromTemplate([
+    { label: '終了', role: 'quit' }
+  ]);
+  console.log("create tray0 " + imgFilePath)
+  const icon = nativeImage.createFromPath(imgFilePath);
+  console.log(icon.getBitmap())
+  const trayIcon = icon.resize({ width: 16 });
+  trayIcon.setTemplateImage(true);
+  tray = new Tray(trayIcon);
+  console.log(tray)
+
+  tray.setToolTip(app.name);
+  tray.setContextMenu(contextMenu);
+  console.log("create tray")
+  tray.on('click', () => {
+    if (mainWindow.isVisible()) {
+      mainWindow.hide();
+    } else {
+      mainWindow.show();
+    }
+  });
+
+}
+
+// - --- main window ---- 
 let mainWindow;
 
 function createWindow() {
@@ -46,16 +86,24 @@ function createWindow() {
   mainWindow.loadFile("./src/index.html");
   mainWindow.webContents.openDevTools();
   console.log("app start")
-  console.log(global)
   mainWindow.webContents.send('projects-changed', global.getProjs());
-  mainWindow.on("closed", () => {
-    mainWindow = null;
+  mainWindow.on("close", (event) => {
+    event.preventDefault();
+    mainWindow.hide();
+    //mainWindow = null;
   });
+  app.on('closed', () => {
+    if (process.platform !== 'darwin') {
+      mainWindow = null;
+    }
+  });
+
   mainWindow.webContents.on("did-finish-load", () => {
     console.log("ready to show");
     initEditor();
     mainWindow.webContents.send('projects-changed', global.getProjs());
     mainWindow.webContents.send('path-changed', global.path);
+    createTrayIcon();
   });
 };
 
