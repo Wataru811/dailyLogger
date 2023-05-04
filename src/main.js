@@ -79,9 +79,12 @@ const createTrayIcon = () => {
   }
   const version = app.getVersion();
   const contextMenu = Menu.buildFromTemplate([
-    {
-      label: "Version " + version, type: 'normal', enable: false
-    },
+    /* 
+      {
+        label: "Version " + version, type: 'normal', enable: false
+      },
+
+      */
     {
       label: "使い方", click: () => { shell.openExternal('https://github.com/Wataru811/dailyLogger/blob/main/README.md') }
     },
@@ -109,7 +112,6 @@ const createTrayIcon = () => {
       mainWindow.show();
     }
   });
-
 }
 
 // - --- main window ---- 
