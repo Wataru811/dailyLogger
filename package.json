@@ -3,6 +3,11 @@
   "productName": "daily-log",
   "version": "1.0.1",
   "description": "Daily Report writer with md format",
+  "author": {
+    "name": "Walter Ehrmantraut",
+    "email": "wash.fuel@gmail.com"
+  },
+  "homepage": "www.press.asia",
   "main": "./src/main.js",
   "config": {
     "forge": {
@@ -16,8 +21,11 @@
   "build": {
     "productName": "daily-log",
     "appId": "com.interio-inc.daily.log",
+    "icon": "build/app.icns",
     "mac": {
       "target": "dmg",
+      "identity": null,
+      "category": "public.app-category.developer-tools",
       "icon": "build/app.icns"
     },
     "directories": {
@@ -32,7 +40,6 @@
     "lint": "echo \"No linting configured\""
   },
   "keywords": [],
-  "author": "Walter Ehrmantraut",
   "license": "MIT",
   "dependencies": {
     "electron-squirrel-startup": "^1.0.0",
