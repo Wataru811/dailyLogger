@@ -4,6 +4,7 @@ class Global {
 	constructor() {
 		//this.projects = [];
 		this.projs = [];
+		this.person = [];
 		this.path = "";
 		this.author = ""
 		//this.restore();
@@ -21,12 +22,33 @@ class Global {
 			store.set('author', this.author)
 		}
 	*/
+	getProjs() {
+		return this.projs;
+	}
 
 	addProj(name, path) {
 		this.projs[name] = path;
-		console.log(this.projs)
-		//this.store()
 	}
+
+	delProj(name) {
+		delete this.projs[name];
+	}
+
+	getPersonList() {
+		return this.person;
+	}
+
+	addPerson(name) {
+		this.person.push(name);
+	}
+
+	delPerson(name) {
+		const index = this.person.indexOf(name);
+		if (index > -1) {
+			this.person.splice(index, 1);
+		}
+	}
+
 	setSysPath(path) {
 		this.path = path;
 		//this.store()
@@ -34,19 +56,6 @@ class Global {
 	setSysAuthor(author) {
 		this.author = author;
 		//this.store()
-	}
-
-
-
-	delProj(name) {
-		delete this.projs[name];
-		console.log(this.projs)
-		//this.store();
-	}
-
-	getProjs() {
-		return this.projs;
-		//return Object.keys(this.projs).sort();
 	}
 }
 

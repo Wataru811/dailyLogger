@@ -101,11 +101,24 @@
       top: 8px;
     }
 
+    .btn-system2 {
+      position: fixed;
+      right: 36px;
+      top: 8px;
+    }
+
+
     .close-btn:hover,
     .close-btn:focus {
       color: #000;
       text-decoration: none;
       cursor: pointer;
+    }
+
+    #log-target,
+    #sel-person {
+      width: 90px;
+      font-size: 0.85em;
     }
   </style>
 </head>
@@ -131,11 +144,14 @@
     -->
     <div class="content">
       <header class="header">
+        <button class="btn-system2 folder-btnS" id="folder-btnS">
+          <img src="./img/open-folder.png" width="16" height="16">
+        </button>
         <button class="btn-system open-btnS" id="open-btnS">
           <img src="./img/gear.svg" width="16" height="16">
         </button>
 
-        <span class="mr-4">Project:　
+        <span class="mr-4">
         </span><select id="sel-project">
           <option value="ad-hoc" title="">ad-hoc</option>
           <option value="meeting" title="">meeting</option>
@@ -147,13 +163,17 @@
           <option value="Me" title="自己タスク">myself:</option>
           <option value="From" title="オーダーを出した人">from:</option>
           <option value="To" title="自分がオーダーした相手">to:</option>
-        </select> <input type="" id="log-target" />
+        </select>
+        <select id="sel-person"></select>
+        <input type="" id="log-target" />
+        <button class="btn-proj" id="personDelBtn">Ｘ</button>
+        <button class="btn-proj" id="openDlgPerson">＋</button>
+
         <br>
         <textarea id="log-text"></textarea>
         <button class="btn-primary logbtn" id="btnPost">log登録</button>
         <br>
       </header>
-
 
       <div id="inputArea"></div>
       <div class="cmd-wrap">
@@ -166,7 +186,7 @@
 
     <div id="myModal" class="modal">
       <div class="modal-content">
-        <span class="close-btn">&times;</span>
+        <span id="close-btn" class="close-btn">&times;</span>
         <h2>プロジェクト登録
           <span style="font-size:0.7em">(登録したpathに日報を保存します)</span>
         </h2>
@@ -179,7 +199,7 @@
               <input type="text" id="inputProj" name="inputText"><br>
             </td>
           </tr>
-          <tr>
+          <tr style="display:none;">
             <td>
               <label for="inputProj">Path:</label>
             </td>
@@ -194,6 +214,26 @@
         <button id="newProj">登録</button>
       </div>
     </div>
+
+    <div id="dlgPerson" class="modal">
+      <div class="modal-content">
+        <span id="close-btn2" class="close-btn">&times;</span>
+        <h2>人名登録</h2>
+        <table>
+          <tr>
+            <td>
+              <label for="inputPerson">名前:</label>
+            </td>
+            <td>
+              <input type="text" id="inputPerson" name="inputPerson"><br>
+            </td>
+          </tr>
+        </table>
+        <button id="newPerson">登録</button>
+      </div>
+    </div>
+
+
 
 
     <div id="settingsModal" class="modal">

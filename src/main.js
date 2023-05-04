@@ -3,32 +3,63 @@ const path = require("path");
 const fs = require("fs");
 const electron = require("electron");
 const app = electron.app;
-const { BrowserWindow, ipcMain, dialog, Tray, Menu, nativeImage, nativeTheme } = electron;
+const { BrowserWindow, ipcMain, dialog, Tray, Menu, nativeImage, nativeTheme, shell } = electron;
 const Global = require('./global.js');
 const DEBUG = true;
-//const electronLog = require('electron-log');
 const Store = require('electron-store');  // store 
 const store = new Store({ cwd: "electron-editor.config.json" });
+const isSecondInstance = app.requestSingleInstanceLock();
 
+if (!isSecondInstance) {
+  app.quit();
+} else {
+  app.on('second-instance', (event, commandLine, workingDirectory) => {
+    // すでにアプリが起動している場合、ウィンドウをフォーカスする
+    const win = BrowserWindow.getFocusedWindow();
+    if (win) {
+      if (win.isMinimized()) win.restore();
+      win.focus();
+    }
+  });
+
+  app.on('ready', () => {
+    // ウィンドウを作成する
+    createWindow();
+  });
+
+  // 全てのウィンドウが閉じたときの処理
+  app.on("window-all-closed", () => {
+    // macOSのとき以外はアプリを終了させます
+    if (process.platform !== "darwin") {
+      app.quit();
+    }
+  });
+  // アプリケーションがアクティブになった時の処理(Macだと、Dockがクリックされた時）
+  app.on("activate", () => {
+    /// メインウィンドウが消えている場合は再度メインウィンドウを作成する
+    if (mainWindow === null) {
+      createWindow();
+    }
+  });
+}
 
 var global = new Global();   // create and restore from config
 loadSettings();
-
 function loadSettings() {
   console.log(store.get('projects', {}));
   global.projs = store.get('projects', {});
+  global.person = store.get('person', []);
   global.author = store.get('author', "");
   global.path = store.get('path', "~/.electron-user/");
-
+  console.log(global)
 }
 
 function saveSettings() {
+  store.set('person', global.person)
   store.set('projects', global.projs)
   store.set('path', global.path)
   store.set('author', global.author)
-
 }
-
 
 // ---------------- Tray ----------------------------
 let tray = null;
@@ -47,19 +78,23 @@ const createTrayIcon = () => {
     }
   }
   const contextMenu = Menu.buildFromTemplate([
-    { label: '終了', role: 'quit' }
+    {
+      label: '終了', click: function () {
+        app.isQuiting = true;
+        mainWindow.destroy();
+        console.log("quit");
+        app.quit();
+      }
+    }
   ]);
-  console.log("create tray0 " + imgFilePath)
+
   const icon = nativeImage.createFromPath(imgFilePath);
-  console.log(icon.getBitmap())
   const trayIcon = icon.resize({ width: 16 });
   trayIcon.setTemplateImage(true);
   tray = new Tray(trayIcon);
-  console.log(tray)
 
   tray.setToolTip(app.name);
   tray.setContextMenu(contextMenu);
-  console.log("create tray")
   tray.on('click', () => {
     if (mainWindow.isVisible()) {
       mainWindow.hide();
@@ -86,14 +121,15 @@ function createWindow() {
   mainWindow.loadFile("./src/index.html");
   mainWindow.webContents.openDevTools();
   console.log("app start")
-  mainWindow.webContents.send('projects-changed', global.getProjs());
   mainWindow.on("close", (event) => {
+    console.log("close!")
     event.preventDefault();
     mainWindow.hide();
     //mainWindow = null;
   });
   app.on('closed', () => {
     if (process.platform !== 'darwin') {
+      console.log("closed")
       mainWindow = null;
     }
   });
@@ -102,6 +138,7 @@ function createWindow() {
     console.log("ready to show");
     initEditor();
     mainWindow.webContents.send('projects-changed', global.getProjs());
+    mainWindow.webContents.send('person-changed', global.getPersonList());
     mainWindow.webContents.send('path-changed', global.path);
     createTrayIcon();
   });
@@ -120,24 +157,6 @@ function initEditor() {
   mainWindow.webContents.send('editor-changed', { fname, text });
 }
 
-
-//  初期化が完了した時の処理
-app.on("ready", createWindow);
-// 全てのウィンドウが閉じたときの処理
-app.on("window-all-closed", () => {
-  // macOSのとき以外はアプリを終了させます
-  if (process.platform !== "darwin") {
-    app.quit();
-  }
-});
-// アプリケーションがアクティブになった時の処理(Macだと、Dockがクリックされた時）
-app.on("activate", () => {
-  /// メインウィンドウが消えている場合は再度メインウィンドウを作成する
-  if (mainWindow === null) {
-    createWindow();
-  }
-});
-
 // レンダラープロセスとの連携
 ipcMain.handle("getDefPath", getDefPath);
 ipcMain.handle("setSystem", setSystem);
@@ -147,6 +166,9 @@ ipcMain.handle("saveFile", saveFile);
 ipcMain.handle("addProj", addProj);
 ipcMain.handle("delProj", delProj);
 ipcMain.handle("post", post);
+ipcMain.handle("addPerson", addPerson);
+ipcMain.handle("delPerson", delPerson);
+ipcMain.handle("openFolder", openFolder);
 
 function formatDate(date) {
   const year = date.getFullYear();
@@ -220,7 +242,6 @@ async function getDefPath() {
   );
   console.log(result);
   if (result.filePaths.length > 0) {
-    //mainWindow.webContents.send('path-changed', result.filePaths[0]);
     return result.filePaths[0]
   }
   return null;
@@ -233,7 +254,6 @@ async function setSystem(event, path, author) {
   global.setSysPath(path)
   global.setSysAuthor(author)
   saveSettings();
-  //mainWindow.webContents.send('path-changed', global.path);
   return { path, author };
 }
 
@@ -344,7 +364,7 @@ async function addProj(event, name, path) {
     saveSettings();
     mainWindow.webContents.send('projects-changed', global.getProjs());
   }
-  return { name: name, path: path };
+  return global.getProjs()
 }
 
 
@@ -355,7 +375,34 @@ async function delProj(event, name) {
     saveSettings();
     mainWindow.webContents.send('projects-changed', global.getProjs());
   }
-  return { name: name };
+  return global.getProjs()
+}
+
+
+async function addPerson(event, name) {
+  if ("" != name) {
+    global.addPerson(name);
+    saveSettings();
+    //mainWindow.webContents.send('person-changed', global.getPersonList());
+  }
+  return global.getPersonList();
+}
+
+
+async function delPerson(event, name) {
+  console.log("delete project in main.js" + name)
+  if ("" != name) {
+    global.delPerson(name);
+    saveSettings();
+    //mainWindow.webContents.send('person-changed', global.getPersonList());
+  }
+  return global.getPersonList();
+}
+
+
+async function openFolder(event) {
+  shell.openPath(global.path) // Open the given file in the desktop's default manner.
+  return true;
 }
 
 

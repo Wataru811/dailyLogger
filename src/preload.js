@@ -32,13 +32,6 @@ contextBridge.exposeInMainWorld("myApp", {
     return result;
   },
 
-
-  async delProj(name) {
-    console.log("delete " + name)
-    const result = await ipcRenderer.invoke("delProj", name);
-    return result;
-  },
-
   async getPath() {
     const result = await ipcRenderer.invoke("getPath");
     return result;
@@ -53,12 +46,33 @@ contextBridge.exposeInMainWorld("myApp", {
     const result = await ipcRenderer.invoke("setSystem", path, author);
     return result;
   },
+  async openFolder() {
+    const result = ipcRenderer.invoke("openFolder");
+    return result;
+  },
+
 
   async addProj(name, path) {
-    console.log("add " + name)
     const result = await ipcRenderer.invoke("addProj", name, path);
     return result;
   },
+
+  async delProj(name) {
+    const result = await ipcRenderer.invoke("delProj", name);
+    return result;
+  },
+
+
+  async addPerson(name) {
+    const result = await ipcRenderer.invoke("addPerson", name);
+    return result;
+  },
+
+  async delPerson(name) {
+    const result = await ipcRenderer.invoke("delPerson", name);
+    return result;
+  },
+
 
   onPathChanged: (callback) => {
     ipcRenderer.on('path-changed', (_, data) => callback(data));
@@ -67,6 +81,12 @@ contextBridge.exposeInMainWorld("myApp", {
   onProjectsChanged: (callback) => {
     ipcRenderer.on('projects-changed', (_, data) => callback(data));
   },
+
+  onPersonChanged: (callback) => {
+    console.log("person changed")
+    ipcRenderer.on('person-changed', (_, data) => callback(data));
+  },
+
 
   onEditorChanged: (callback) => {
     ipcRenderer.on('editor-changed', (_, data) => callback(data));

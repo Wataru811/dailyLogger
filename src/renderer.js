@@ -11,6 +11,12 @@ document.querySelector("#btnSave").addEventListener("click", () => {
   saveFile();
 });
 
+// 保存先フォルダを開く 
+document.querySelector("#folder-btnS").addEventListener("click", () => {
+  window.myApp.openFolder();
+});
+
+
 // 投稿
 document.querySelector("#btnPost").addEventListener("click", async () => {
   let text = document.getElementById("log-text").value
@@ -45,17 +51,37 @@ document.querySelector("#btnPost").addEventListener("click", async () => {
 });
 
 
+document.querySelector("#newPerson").addEventListener("click", async () => {
+  let input = document.getElementById("inputPerson")
+  const result = await window.myApp.addPerson(input.value);
+  console.log(result)
+  onResetPerson(result)
+
+});
+
+document.querySelector("#personDelBtn").addEventListener("click", async () => {
+  let elm = document.getElementById(tagSelPerson)
+  if (confirm(elm.text + " を削除しますか？")) {
+    const result = await window.myApp.delPerson(elm.text);
+    console.log(result)
+    onResetPerson(result)
+  }
+});
+
+
 document.querySelector("#newProj").addEventListener("click", async () => {
   let input = document.getElementById("inputProj")
   let path = document.getElementById("inputPath")
   const result = await window.myApp.addProj(input.value, path.value);
+  console.log(result)
 });
 
-
 document.getElementById("ProjDelBtn").addEventListener("click", async () => {
-  if (confirm(value + " を削除しますか？")) {
-    let elm = document.getElementById(tagSelProj)
-    const result = await window.myApp.delProj(elm.text);
+  let proj = document.getElementById(tagSelProj)
+  let proj_t = proj.options[proj.selectedIndex].text;
+  if (confirm(proj_t + " を削除しますか？")) {
+    const result = await window.myApp.delProj(proj_t);
+    console.log(result)
   }
 });
 
@@ -103,19 +129,22 @@ async function saveFile() {
   console.log(editor)
   const result = await window.myApp.saveFile(currentFile, editor.getValue());
   if (result) {
-    footerArea.textContent = currentPath = result.filePath;
+    footerArea.textContent = currentFile = result.filePath;
   }
 }
 
 
 var tagSelProj = "sel-project";
+var tagSelPerson = "sel-person";
 window.myApp.onProjectsChanged((projs) => {
+  console.log("proj changed")
   onResetSelect(tagSelProj, projs);
 });
 
-function resetSelProj(options) {
-  onResetSelect(tagSelProj, options);
-}
+window.myApp.onPersonChanged((personList) => {
+  console.log("person changed")
+  onResetPerson(personList);
+});
 
 window.myApp.onPathChanged((path) => {
   console.log(path)
@@ -125,14 +154,11 @@ window.myApp.onPathChanged((path) => {
 });
 
 window.myApp.onEditorChanged((data) => {
-  console.log(data.text)
   editor.setValue(data.text, -1);
   editor.renderer.scrollToLine(Number.POSITIVE_INFINITY)
   currentFile = data.fname;
   footerArea.textContent = data.fname;
 });
-
-
 
 function onResetSelect(tagID, options) {
   const select = document.getElementById(tagID);
@@ -145,6 +171,27 @@ function onResetSelect(tagID, options) {
     select.appendChild(option);
   }
 }
+
+function onResetPerson(options) {
+  console.log("onreset person")
+  console.log(options)
+  const select = document.getElementById(tagSelPerson);
+  select.innerHTML = "";
+  const option = document.createElement('option');
+  option.text = "(none)"
+  option.value = ""
+  select.appendChild(option);
+
+  //for (let i = 0; i < options.length; i++) {
+  for (let i in options) {
+    const option = document.createElement('option');
+    option.text = options[i]
+    option.value = options[i]
+    select.appendChild(option);
+  }
+}
+
+
 
 
 /*
