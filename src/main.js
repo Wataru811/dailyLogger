@@ -86,7 +86,7 @@ const createTrayIcon = () => {
 
       */
     {
-      label: "使い方", click: () => { shell.openExternal('https://github.com/Wataru811/dailyLogger/blob/main/README.md') }
+      label: "使い方", click: () => { shell.openExternal('https://github.com/Wataru811/dailyLogger/blob/main/Usage.md') }
     },
     {
       label: '終了', click: function () {
