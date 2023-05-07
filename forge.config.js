@@ -6,6 +6,13 @@ module.exports = {
   rebuildConfig: {},
   makers: [
     {
+      name: '@electron-forge/maker-wix',
+      config: {
+        language: 1033,
+        manufacturer: 'Checkmate'
+      }
+    },
+    {
       name: '@electron-forge/maker-dmg',
       config: {
         background: './assets/dmg-background.png',

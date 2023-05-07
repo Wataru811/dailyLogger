@@ -3,7 +3,7 @@ const path = require("path");
 const fs = require("fs");
 const electron = require("electron");
 const app = electron.app;
-const { BrowserWindow, ipcMain, dialog, Tray, Menu, nativeImage, nativeTheme, shell } = electron;
+const { BrowserWindow, ipcMain, dialog, Tray, Menu, nativeImage, nativeTheme, shell, powerMonitor } = electron;
 const Global = require('./global.js');
 const DEBUG = true;
 const Store = require('electron-store');  // store 
@@ -40,6 +40,12 @@ if (!isSecondInstance) {
     if (mainWindow === null) {
       createWindow();
     }
+  });
+
+  powerMonitor.on('shutdown', () => {
+    app.isQuiting = true;
+    mainWindow.destroy();
+    app.quit();
   });
 }
 

@@ -21,12 +21,24 @@
   "build": {
     "productName": "daily-log",
     "appId": "com.interio-inc.daily.log",
-    "icon": "build/app.icns",
     "mac": {
       "target": "dmg",
       "identity": null,
       "category": "public.app-category.developer-tools",
       "icon": "build/app.icns"
+    },
+    "win": {
+      "icon": "build/app.ico",
+      "target": [
+        "nsis",
+        "msi"
+      ]
+    },
+    "linux": {
+      "icon": "build/256x256.png",
+      "target": [
+        "deb"
+      ]
     },
     "directories": {
       "output": "out"
