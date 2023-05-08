@@ -212,7 +212,7 @@ async function newFile(fname) {
     return
   }
   let dt = formatDate(new Date());
-  let textData0 = `# Daily Report  ${dt} \n\n Written by ${global.author}\n\n---\n<br>`
+  let textData0 = `# Daily Report  ${dt} \n\n Written by ${global.author}\n\n---\n\n\n`
   await fs.writeFileSync(fname, textData0, "utf8");
 }
 
