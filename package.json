@@ -28,14 +28,21 @@
       "icon": "build/app.icns"
     },
     "win": {
-      "icon": "build/app.ico",
+      "icon": "build/icon.ico",
+      "publisherName": "W.Ishizuka",
       "target": [
         "nsis",
         "msi"
       ]
     },
+    "nsis": {
+      "oneClick": false,
+      "createDesktopShortcut": true,
+      "installerSidebar": "build/background.bmp",
+      "allowToChangeInstallationDirectory": true
+    },
     "linux": {
-      "icon": "build/256x256.png",
+      "icon": "build/512x512.png",
       "target": [
         "deb"
       ]
@@ -46,6 +53,8 @@
   },
   "scripts": {
     "start": "electron-forge start",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
     "package": "electron-forge package",
     "make": "electron-forge make",
     "publish": "electron-forge publish",

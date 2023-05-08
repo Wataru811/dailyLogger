@@ -36,8 +36,12 @@ details:
 |       | 実行 | app  icon | Tray  Icon | installer      |
 |-------|------|-----------|------------|----------------|
 | mac   | O    | O         | O          | O (dmg)        |
-| win   | O    | O         | O          | X 途中で止まる |
+| win   | O    | O         | O          | O |  ※インスコ途中停止は2回目以降すでに入っているのを手動で消す必要
 | linux | O    | X         | X          | O              |
+
+- forge がうまく動作せず、 electron-builder に戻して調整した
+- linux は256x256 -> 512x512.png を試す => OK
+- linux software center にアイコンが表示されない => ??
 
 
 
@@ -74,6 +78,26 @@ yarn start
 ```
 ./build.sh
 ```
+
+
+## trouble shooting
+
+### Windowsインストール時に警告が出る問題
+
+(WindowsによってPCが保護されました)
+
+$100ドルほどで署名を購入する必要がある。
+https://blog.katsubemakito.net/articles/buy-comodo-codesigning
+
+しかし、購入しても多くの人がインストールして運用しないと警告は消えないので,今回は解消できない。
+
+
+
+### たまに巨大（１GB)のインストーラーが作成されてしまう
+
+/out フォルダを削除して再ビルド
+
+
 
 
 

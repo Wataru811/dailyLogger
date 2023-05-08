@@ -5,7 +5,7 @@ const electron = require("electron");
 const app = electron.app;
 const { BrowserWindow, ipcMain, dialog, Tray, Menu, nativeImage, nativeTheme, shell, powerMonitor } = electron;
 const Global = require('./global.js');
-const DEBUG = true;
+const DEBUG = false;
 const Store = require('electron-store');  // store 
 const store = new Store({ cwd: "electron-editor.config.json" });
 const isSecondInstance = app.requestSingleInstanceLock();
@@ -127,14 +127,17 @@ function createWindow() {
   // メインウィンドウを作成します
   mainWindow = new BrowserWindow({
     width: 800,
-    height: DEBUG ? 540 + 580 : 540,
+    height: DEBUG ? 690 + 480 : 690,
     webPreferences: {
       // preload.js を指定
       preload: path.join(app.getAppPath(), "./src/preload.js"),
     },
   });
   mainWindow.loadFile("./src/index.html");
-  mainWindow.webContents.openDevTools();
+
+  // これは別途、他のボタンから開けるようにする
+  //mainWindow.webContents.openDevTools();
+
   console.log("app start")
   mainWindow.on("close", (event) => {
     console.log("close!")
