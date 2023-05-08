@@ -45,11 +45,10 @@ details:
 
 
 
-
 ## Usage
 
 This app is writing 'daily report' as your working log.
-It d
+
 
 
 1. first time you run the app, please press "gear" icon in right top of teh scree and set data folder where your report will be saved.
