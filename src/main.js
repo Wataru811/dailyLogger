@@ -230,7 +230,7 @@ function createArticle(data) {
       textData1 = textData1 + `${data.person}さんへ:\n`
     }
   }
-  return textData1 + data.text + "\n\n"
+  return textData1 + data.text + "\n"
 }
 
 async function post(event, data) {
