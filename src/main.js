@@ -221,16 +221,16 @@ async function newFile(fname) {
 
 function createArticle(data) {
   let tm = formatTime(new Date());
-  let textData1 = `\n## [${tm}]   ${data.project}\n`
+  let textData1 = `\n## [${tm}]   ${data.project}\n\n`
   if (data.person != "") {
     if (data.direction == "From") {
-      textData1 = textData1 + `${data.person}さんより:\n`
+      textData1 = textData1 + `${data.person}さんより:\n\n`
     }
     if (data.direction == "To") {
-      textData1 = textData1 + `${data.person}さんへ:\n`
+      textData1 = textData1 + `${data.person}さんへ:\n\n`
     }
   }
-  return textData1 + data.text + "\n"
+  return textData1 + data.text + "\n\n"
 }
 
 async function post(event, data) {
